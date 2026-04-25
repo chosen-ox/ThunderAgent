@@ -33,7 +33,7 @@ class VllmModelConfig:
     step_limit: int = 0  # Step limit for calculating is_last_step
     stream: bool = True  # Enable streaming responses
     timeout: float | None = None  # Request timeout; None disables client-side timeout
-    max_completion_tokens: int = 2048  # Maximum tokens to generate per response
+    max_completion_tokens: int = 0  # Maximum tokens to generate per response; 0 = unlimited (model max)
 
 
 class VllmModel:
@@ -88,6 +88,7 @@ class VllmModel:
             "response_format",
             "logprobs",
             "top_logprobs",
+            "stream_options",
         }
         filtered = {k: v for k, v in params.items() if k in valid_params}
         if filtered != params:
@@ -116,9 +117,10 @@ class VllmModel:
             if "stream" not in all_params:
                 all_params["stream"] = self.config.stream
 
-            # Add max_completion_tokens from config if not explicitly provided
+            # Set max_completion_tokens only if explicitly configured (> 0)
             if "max_completion_tokens" not in all_params and "max_tokens" not in all_params:
-                all_params["max_completion_tokens"] = self.config.max_completion_tokens
+                if self.config.max_completion_tokens > 0:
+                    all_params["max_completion_tokens"] = self.config.max_completion_tokens
 
             filtered_params = self._filter_openai_params(all_params)
 
