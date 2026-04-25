@@ -1,0 +1,397 @@
+================================================================================
+PART 1: THUNDERAGENT ANALYSIS (step_profiles.csv)
+================================================================================
+
+Total rows in step_profiles.csv: 1911
+Columns: ['program_id', 'step_id', 'prefill_s', 'decode_s', 'pause_s', 'tool_call_s', 'prompt_tokens', 'completion_tokens', 'cached_tokens', 'kv_hit_rate', 'completed_at']
+Unique programs (tasks): 100
+
+── 1a. Per-step Latency Statistics (Thunder) ──
+  prefill_s:
+    n=1911  mean=3.15  std=25.79
+    median=0.23  p10=0.13  p25=0.17  p75=1.26
+    p90=5.09  p99=22.72
+    min=0.04  max=468.88
+  decode_s:
+    n=1911  mean=49.14  std=173.29
+    median=22.17  p10=11.05  p25=15.47  p75=33.52
+    p90=53.98  p99=1265.84
+    min=0.57  max=1925.11
+  pause_s:
+    n=1911  mean=27.3  std=136.73
+    median=0.0  p10=0.0  p25=0.0  p75=3.99
+    p90=20.63  p99=745.06
+    min=0.0  max=1800.0
+  tool_call_s:
+    n=1911  mean=0.22  std=0.5
+    median=0.11  p10=0.08  p25=0.09  p75=0.2
+    p90=0.31  p99=2.56
+    min=0.0  max=8.87
+
+── 1b. Per-step Token Statistics (Thunder) ──
+  prompt_tokens:
+    n=1911  mean=8503.48  std=7188.65
+    median=6467.0  p10=1876.0  p25=3262.0  p75=11574.0
+    p90=17633.0  p99=37548.9
+    min=1266.0  max=40934.0
+  completion_tokens:
+    n=1911  mean=1380.4  std=4567.0
+    median=628.0  p10=365.0  p25=468.0  p75=957.5
+    p90=1540.0  p99=36523.8
+    min=26.0  max=39601.0
+
+── 1c. KV Hit Rate Statistics (Thunder) ──
+  kv_hit_rate:
+    n=1910  mean=0.66  std=0.41
+    median=0.93  p10=0.01  p25=0.08  p75=0.98
+    p90=0.99  p99=0.99
+    min=0.0  max=1.0
+
+  Catastrophic steps (kv_hit_rate < 0.05): 399 / 1910 (20.9%)
+
+  KV hit rate distribution:
+         <5%:   399 steps ( 20.9%)
+       5-25%:   144 steps (  7.5%)
+      25-50%:    46 steps (  2.4%)
+      50-75%:    86 steps (  4.5%)
+      75-90%:   131 steps (  6.9%)
+      90-95%:   256 steps ( 13.4%)
+     95-100%:   848 steps ( 44.4%)
+
+── 1d. Pause Duration Analysis (Thunder) ──
+  Steps with pause_s > 0.001s:    1313 (68.7%)
+  Steps with pause_s > 0.1s:       892 (46.7%)
+  Steps with pause_s > 1s:         794 (41.5%)
+  Steps with pause_s > 10s:        281 (14.7%)
+  Steps with pause_s > 60s:        115 (6.0%)
+  Steps with pause_s > 300s:        49 (2.6%)
+  Steps with pause_s > 600s:        31 (1.6%)
+  pause_s (all):
+    n=1911  mean=27.3  std=136.73
+    median=0.0  p10=0.0  p25=0.0  p75=3.99
+    p90=20.63  p99=745.06
+    min=0.0  max=1800.0
+  pause_s (>0.001 only):
+    n=1313  mean=39.74  std=163.47
+    median=2.22  p10=0.0  p25=0.0  p75=7.62
+    p90=45.08  p99=840.74
+    min=0.0  max=1800.0
+
+── 1e. Wall-Clock Time (Thunder) ──
+  First completed_at: 1776904433.96
+  Last  completed_at: 1776912154.97
+  Wall-clock: 7721.0s = 128.7 min = 2.14 hours
+
+── 1f. Steps per Task (Thunder) ──
+  steps_per_task:
+    n=100  mean=19.11  std=27.74
+    median=9.0  p10=2.0  p25=5.0  p75=19.5
+    p90=49.3  p99=135.0
+    min=1.0  max=135.0
+
+── 1g. Aggregate Token Totals (Thunder, from CSV) ──
+  Total prompt_tokens:         16,250,152
+  Total completion_tokens:      2,637,942
+  Total cached_tokens:       11,144,608.0
+  Overall cache hit rate:    68.58%
+  Cache-compute tokens:       5,105,544.0
+
+================================================================================
+PART 2: BASELINE vLLM ANALYSIS (traj.json files)
+================================================================================
+
+Total assistant steps extracted: 1915
+Unique instances: 100
+
+── 2a. KV Hit Rate Statistics (Baseline) ──
+  kv_hit_rate:
+    n=1915  mean=0.42  std=0.45
+    median=0.07  p10=0.01  p25=0.02  p75=0.97
+    p90=0.99  p99=0.99
+    min=0.0  max=1.0
+
+  Catastrophic steps (kv_hit_rate < 0.05): 859 / 1915 (44.9%)
+
+  KV hit rate distribution:
+         <5%:   859 steps ( 44.9%)
+       5-25%:   215 steps ( 11.2%)
+      25-50%:    44 steps (  2.3%)
+      50-75%:    58 steps (  3.0%)
+      75-90%:    58 steps (  3.0%)
+      90-95%:   119 steps (  6.2%)
+     95-100%:   562 steps ( 29.3%)
+
+── 2b. Per-step Token Statistics (Baseline) ──
+  prompt_tokens:
+    n=1915  mean=10751.61  std=9671.91
+    median=6836.0  p10=1940.0  p25=3387.5  p75=15469.5
+    p90=25297.4  p99=39049.58
+    min=1266.0  max=40816.0
+  completion_tokens:
+    n=1915  mean=1497.4  std=4842.02
+    median=699.0  p10=407.4  p25=518.0  p75=1045.5
+    p90=1619.2  p99=38671.0
+    min=144.0  max=39577.0
+
+── 2c. Timing Estimation from `created` timestamps (Baseline) ──
+  inter_step_s (time between consecutive steps):
+    n=1815  mean=87.04  std=141.2
+    median=45.0  p10=13.0  p25=20.0  p75=93.0
+    p90=160.0  p99=773.16
+    min=3.0  max=1505.0
+
+  First created: 1776893569.00
+  Last  created: 1776903149.00
+  Wall-clock: 9580.0s = 159.7 min = 2.66 hours
+
+── 2d. Steps per Task (Baseline) ──
+  steps_per_task:
+    n=100  mean=19.15  std=29.03
+    median=8.0  p10=1.9  p25=4.0  p75=20.0
+    p90=54.3  p99=135.0
+    min=1.0  max=135.0
+
+── 2e. Aggregate Token Totals (Baseline) ──
+  Total prompt_tokens:         20,589,338
+  Total completion_tokens:      2,867,522
+  Total cached_tokens:         12,139,392
+  Overall cache hit rate:    58.96%
+  Cache-compute tokens:         8,449,946
+
+  Steps with cached_tokens == 0:   1
+  Steps with cached_tokens == 112:  1043
+  Steps with cached_tokens > 112:   871
+
+================================================================================
+PART 3: CROSS-EXPERIMENT COMPARISON
+================================================================================
+
+── 3a. Token-Level Cache Hit Rate ──
+  Thunder:  11,144,608.0 /   16,250,152 = 68.58%
+  Baseline:   12,139,392 /   20,589,338 = 58.96%
+  Delta:    +9.62 pp
+
+  Cache-compute tokens (prompt - cached):
+    Thunder:   5,105,544.0
+    Baseline:    8,449,946
+    Delta:    -3,344,402.0 (-39.6%)
+
+  Total prompt tokens:
+    Thunder:    16,250,152
+    Baseline:   20,589,338
+    Delta:      -4,339,186 (-21.1%)
+
+  Total generation tokens:
+    Thunder:     2,637,942
+    Baseline:    2,867,522
+    Delta:        -229,580 (-8.0%)
+
+── 3b. Catastrophic Steps ──
+  Thunder:    399 /  1910 steps (20.9%)
+  Baseline:   859 /  1915 steps (44.9%)
+  Baseline steps with cached_tokens=0: 1
+
+── 3c. Steps per Task ──
+  Thunder steps/task:
+    n=100  mean=19.11  std=27.74
+    median=9.0  p10=2.0  p25=5.0  p75=19.5
+    p90=49.3  p99=135.0
+    min=1.0  max=135.0
+
+  Baseline steps/task:
+    n=100  mean=19.15  std=29.03
+    median=8.0  p10=1.9  p25=4.0  p75=20.0
+    p90=54.3  p99=135.0
+    min=1.0  max=135.0
+
+── 3d. Per-Step KV Hit Rate Side-by-Side ──
+    Percentile     Thunder    Baseline
+          1.0%      0.0060      0.0041
+          5.0%      0.0086      0.0080
+         10.0%      0.0130      0.0108
+         25.0%      0.0784      0.0196
+         50.0%      0.9349      0.0708
+         75.0%      0.9762      0.9674
+         90.0%      0.9875      0.9898
+         95.0%      0.9908      0.9922
+         99.0%      0.9947      0.9944
+
+          Mean      0.6636      0.4171
+        Median      0.9349      0.0708
+           Std      0.4133      0.4484
+
+================================================================================
+PART 4: PER-INSTANCE AGGREGATE COMPARISON
+================================================================================
+
+── Per-Instance Aggregate KV Hit Rate ──
+  Thunder per-instance KV hit rate:
+    n=100  mean=0.58  std=0.25
+    median=0.64  p10=0.08  p25=0.44  p75=0.76
+    p90=0.85  p99=0.89
+    min=0.04  max=0.9
+
+  Baseline per-instance KV hit rate:
+    n=100  mean=0.32  std=0.33
+    median=0.08  p10=0.03  p25=0.05  p75=0.69
+    p90=0.83  p99=0.89
+    min=0.01  max=0.89
+
+── Per-Instance Total Prompt Tokens ──
+  Thunder:
+    n=100  mean=162501.52  std=377189.85
+    median=25720.0  p10=3156.3  p25=9136.75  p75=88092.5
+    p90=467021.4  p99=1847857.03
+    min=1359.0  max=2118229.0
+
+  Baseline:
+    n=100  mean=205893.38  std=519862.59
+    median=25466.0  p10=2978.5  p25=8420.0  p75=99476.5
+    p90=785691.1  p99=2461283.63
+    min=1383.0  max=3036833.0
+
+── Per-Instance Total Completion Tokens ──
+  Thunder:
+    n=100  mean=26379.42  std=24641.66
+    median=13475.5  p10=3304.9  p25=6372.5  p75=41116.0
+    p90=58197.4  p99=90792.9
+    min=2027.0  max=121968.0
+
+  Baseline:
+    n=100  mean=28675.22  std=26367.15
+    median=19063.0  p10=3916.6  p25=6604.5  p75=41418.5
+    p90=56169.0  p99=122299.59
+    min=2045.0  max=132654.0
+
+── Per-Instance Steps ──
+  Thunder:
+    n=100  mean=19.11  std=27.74
+    median=9.0  p10=2.0  p25=5.0  p75=19.5
+    p90=49.3  p99=135.0
+    min=1.0  max=135.0
+
+  Baseline:
+    n=100  mean=19.15  std=29.03
+    median=8.0  p10=1.9  p25=4.0  p75=20.0
+    p90=54.3  p99=135.0
+    min=1.0  max=135.0
+
+── Per-Instance Time Breakdown (Thunder) ──
+  total_s per task:
+    n=100  mean=1520.99  std=1731.51
+    median=1216.99  p10=140.95  p25=236.83  p75=2070.6
+    p90=3463.7  p99=7010.33
+    min=48.25  max=7184.36
+
+  total_prefill_s per task:
+    n=100  mean=60.17  std=132.11
+    median=4.58  p10=0.81  p25=1.49  p75=34.79
+    p90=195.15  p99=557.29
+    min=0.17  max=585.4
+
+  total_decode_s per task:
+    n=100  mean=939.05  std=865.46
+    median=464.21  p10=121.71  p25=198.11  p75=1524.04
+    p90=2104.43  p99=2965.05
+    min=47.21  max=3376.81
+
+  total_pause_s per task:
+    n=100  mean=521.77  std=1112.2
+    median=19.98  p10=0.0  p25=1.08  p75=267.84
+    p90=1878.6  p99=4248.81
+    min=0.0  max=4815.55
+
+  Mean prefill fraction: 0.040
+  Mean decode fraction:  0.790
+  Mean pause fraction:   0.170
+
+================================================================================
+PART 5: PREEMPTION / PAUSE ANALYSIS (Thunder)
+================================================================================
+
+  Total steps: 1911
+  Steps with pause_s > 0.001s: 1313
+  Steps with pause_s > 1s:     794
+  Steps with pause_s > 10s:    281
+  Steps with pause_s > 60s:    115
+  Steps with pause_s > 300s:   49
+
+  Per-instance preemption count (pause > 1s):
+  preemptions per task:
+    n=100  mean=7.94  std=11.68
+    median=3.0  p10=0.0  p25=0.75  p75=8.0
+    p90=23.1  p99=44.15
+    min=0.0  max=59.0
+
+  KV hit rate for preempted vs non-preempted steps:
+    Preempted steps (pause > 1s):   n=794, mean kv_hit_rate=0.4330
+    Non-preempted steps (pause <=1s): n=1116, mean kv_hit_rate=0.8276
+
+  KV hit rate for steps AFTER a preemption vs not:
+    After preemption:     n=750, mean=0.6136, median=0.9225
+    Not after preemption: n=1160, mean=0.6959, median=0.9407
+
+================================================================================
+PART 6: SUMMARY TABLE
+================================================================================
+
+  Metric                                           Thunder        Baseline           Delta
+  ----------------------------------------  --------------  --------------  --------------
+  Total steps                                        1,911           1,915              -4
+  Unique tasks                                         100             100              +0
+  Mean steps/task                                     19.1            19.1            -0.0
+  Total prompt tokens (M)                            16.25           20.59           -4.34
+  Total gen tokens (M)                                2.64            2.87           -0.23
+  Total cached tokens (M)                            11.14           12.14           -0.99
+  Cache-compute tokens (M)                            5.11            8.45           -3.34
+  Overall cache hit rate (%)                         68.58           58.96           +9.62
+  Mean per-step kv_hit_rate                         0.6636          0.4171         +0.2465
+  Median per-step kv_hit_rate                       0.9349          0.0708         +0.8641
+  P90 per-step kv_hit_rate                          0.9875          0.9898         -0.0023
+  Catastrophic steps (<0.05)                           399             859            -460
+  Catastrophic step %                                20.9%           44.9%          -24.0%
+
+  ── Known Aggregate Metrics (from experiment logs) ──
+  Metric                                           Thunder        Baseline
+  ----------------------------------------  --------------  --------------
+  Preemptions                                          109             246
+  Prompt tokens (M) [known]                          16.25           20.59
+  Gen tokens (M) [known]                              2.64            2.87
+  Cache hit (M) [known]                              11.14           12.14
+  Cache compute (M) [known]                           5.11            8.45
+
+================================================================================
+PART 7: THUNDERAGENT TIMING DEEP-DIVE
+================================================================================
+
+── Prefill time vs prompt tokens correlation ──
+  Prompt range       n   mean_prefill   mean_decode   mean_pause   mean_kv_hit
+        <=1500      79          7.584       111.736        4.522        0.2208
+       1500-2k     149          4.307       102.570        4.511        0.6084
+         2k-3k     205          7.750        55.851       10.456        0.7316
+         3k-5k     309          0.818        51.433       11.861        0.7316
+        5k-10k     589          1.436        36.986       35.591        0.6912
+       10k-50k     579          3.607        35.679       42.100        0.6496
+
+── Aggregate Time Budget (Thunder) ──
+  Total prefill_s:         6017.4s  (3.9%)
+  Total decode_s:         93904.6s  (61.6%)
+  Total pause_s:          52177.0s  (34.2%)
+  Total tool_call_s:        422.2s  (0.3%)
+  Total:                 152521.2s
+
+  Avg prefill per step:   3.149s
+  Avg decode per step:    49.139s
+  Avg pause per step:     27.303s
+
+── Throughput (Thunder) ──
+  Active inference time: 99922.1s = 27.76 hours
+  Prompt tokens/sec (active): 162.6
+  Completion tokens/sec (active): 26.4
+  Total tokens/sec (active): 189.0
+  Prompt tokens/sec (wall): 2104.7
+  Completion tokens/sec (wall): 341.7
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
